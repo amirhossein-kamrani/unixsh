@@ -4,6 +4,8 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <sys/types.h>
+#include <sys/wait.h>
+#include <sys/shm.h>
 #include <readline/readline.h>
 #include <readline/history.h>
 
@@ -28,30 +30,41 @@ char **parse_input(char *input) {
 
 int main() {
 
-  while (true)
+  int Should_Run = 1;
+  int Shmid = shmget((key_t) 1, 1024, 0666 | IPC_CREAT);
+  int *Shared_Memory = shmat(Shmid, NULL, 0);
+
+  while (Should_Run)
   {
 
-    char *UserInput;
-    UserInput = readline("unixsh> ");
-    add_history(UserInput);
+    char *User_Input;
+    User_Input = readline("unixsh> ");
+    add_history(User_Input);
 
-    char **Arguments = parse_input(UserInput);
-    char Command = Arguments[0];
+    char **Arguments = parse_input(User_Input);
+    char *Command = Arguments[0];
 
     pid_t pid = fork();
 
     if (pid < 0) {
-
       perror("Fork faild");
       continue;
 
-    } else if (pid = 0) {
+    } else if (pid == 0) {
+
+      if (strcmp(Command, "exit") == 0) {
+        *Shared_Memory = 0;
+        Should_Run = *Shared_Memory;
+
+      }
 
     } else {
-
+      wait(NULL);
+      Should_Run = *Shared_Memory;
+      
     }
 
-    free(UserInput);
+    free(User_Input);
     
   }
 
