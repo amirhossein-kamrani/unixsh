@@ -1,25 +1,20 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdbool.h>
+#include <stdlib.h>
+#include <readline/readline.h>
+#include <readline/history.h>
 
-int main(int argc, char *argv[]) {
+int main() {
 
   while (true)
   {
 
-    printf("unixsh>");
-
-    char UserInput[1024];
-    fgets(UserInput, 1024, stdin);
-    UserInput[strlen(UserInput) - 1] = '\0';
-
-    if (strcmp(UserInput, "exit") == 0)
-    {
-      break;
-    }
-    else {
-      printf("%s: command not found\n", UserInput);
-    }
+    char *UserInput;
+    UserInput = readline("unixsh> ");
+    add_history(UserInput);
+    printf("%s\n", UserInput);
+    
   }
 
   return 0;
