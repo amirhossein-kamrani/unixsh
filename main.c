@@ -2,6 +2,8 @@
 #include <string.h>
 #include <stdbool.h>
 #include <stdlib.h>
+#include <unistd.h>
+#include <sys/types.h>
 #include <readline/readline.h>
 #include <readline/history.h>
 
@@ -34,7 +36,20 @@ int main() {
     add_history(UserInput);
 
     char **Arguments = parse_input(UserInput);
-    char Commands = Arguments[0];
+    char Command = Arguments[0];
+
+    pid_t pid = fork();
+
+    if (pid < 0) {
+
+      perror("Fork faild");
+      continue;
+
+    } else if (pid = 0) {
+
+    } else {
+
+    }
 
     free(UserInput);
     
