@@ -27,6 +27,8 @@ char **parse_input(char *input) {
   return Tokens;
 }
 
+int execvp(const char* command, char* argv[]);
+
 int main() {
 
   int Should_Run = 1;
