@@ -61,13 +61,18 @@ int main() {
       else if (strcmp(Command, "cd") == 0) {
 
         if (chdir(Arguments[1]) != 0) {
-          perror("cd failed"); }
+          perror("cd failed");
+        }
 
       }
 
       else if (strcmp(Command, "pwd") == 0) {
         printf("%s\n", getcwd(Directort_Path, 100));
 
+      }
+
+      else {
+        printf("Command not found: %s\n", Command);
       }
 
     } else {
