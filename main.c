@@ -32,8 +32,9 @@ int main() {
   int Should_Run = 1;
   int Shmid = shmget((key_t) 1, 1024, 0666 | IPC_CREAT);
   int *Shared_Memory = shmat(Shmid, NULL, 0);
+  char Directort_Path[100];
 
-  while (1)
+  while (Should_Run)
   {
 
     char *User_Input;
@@ -57,14 +58,19 @@ int main() {
 
       }
       
-      if (strcmp(Command, "cd") == 0) {
+      else if (strcmp(Command, "cd") == 0) {
         chdir(Arguments[1]);
 
         if (chdir(Arguments[1]) != 0) {
           perror("cd failed");
-          
+
         }
 
+      }
+
+      else if (strcmp(Command, "pwd") == 0) {
+        printf("%s\n", getcwd(Directort_Path, 100));
+        
       }
 
     } else {
