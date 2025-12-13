@@ -59,18 +59,20 @@ int main() {
       }
       
       else if (strcmp(Command, "cd") == 0) {
-        chdir(Arguments[1]);
 
         if (chdir(Arguments[1]) != 0) {
           perror("cd failed");
 
+        } else {
+          chdir(Arguments[1]);
+          
         }
 
       }
 
       else if (strcmp(Command, "pwd") == 0) {
         printf("%s\n", getcwd(Directort_Path, 100));
-        
+
       }
 
     } else {
