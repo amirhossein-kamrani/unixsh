@@ -61,12 +61,7 @@ int main() {
       else if (strcmp(Command, "cd") == 0) {
 
         if (chdir(Arguments[1]) != 0) {
-          perror("cd failed");
-
-        } else {
-          chdir(Arguments[1]);
-          
-        }
+          perror("cd failed"); }
 
       }
 
