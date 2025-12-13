@@ -27,15 +27,13 @@ char **parse_input(char *input) {
   return Tokens;
 }
 
-int execvp(const char* command, char* argv[]);
-
 int main() {
 
   int Should_Run = 1;
   int Shmid = shmget((key_t) 1, 1024, 0666 | IPC_CREAT);
   int *Shared_Memory = shmat(Shmid, NULL, 0);
 
-  while (Should_Run)
+  while (1)
   {
 
     char *User_Input;
@@ -56,6 +54,16 @@ int main() {
       if (strcmp(Command, "exit") == 0) {
         *Shared_Memory = 0;
         Should_Run = *Shared_Memory;
+
+      }
+      
+      if (strcmp(Command, "cd") == 0) {
+        chdir(Arguments[1]);
+
+        if (chdir(Arguments[1]) != 0) {
+          perror("cd failed");
+          
+        }
 
       }
 
