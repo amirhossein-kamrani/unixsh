@@ -71,6 +71,16 @@ int main() {
 
       }
 
+      else if (strcmp(Command, "help") == 0) {
+        printf("available commands and usage information\n");
+        
+        printf("exit: Terminate the shell\n");
+        printf("cd <directory>: Change working directory\n");
+        printf("pwd: Print working directory\n");
+        printf("ls: \n");
+        printf("echo: \n");
+      }
+
       else {
         printf("Command not found: %s\n", Command);
       }
