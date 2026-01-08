@@ -9,6 +9,8 @@
 #include <readline/history.h>
 #include <pthread.h>
 
+int Should_Run = 1;
+
 char **parse_input(char *input) {
   int Index = 1;
   char **Tokens = malloc(1024 * sizeof(char *));
@@ -53,9 +55,6 @@ void *validate_row_column(void *param);
 
 int main() {
 
-  int Should_Run = 1;
-  int Shmid = shmget((key_t) 1, 1024, 0666 | IPC_CREAT);
-  int *Shared_Memory = shmat(Shmid, NULL, 0);
   char Directort_Path[100];
   char Buffer[1024] = "";
   char *User_Input;
@@ -68,30 +67,61 @@ int main() {
     add_history(User_Input);
 
     if (strcmp(User_Input, "!!") == 0) {
-      printf("1\n");
       if (strlen(Buffer) == 0) {
-        printf("No commands in history\n");
         free(User_Input);
         continue;
 
       }
 
-      printf("3\n");
-      printf("%s\n", User_Input);
       printf("%s\n", Buffer);
       Arguments = parse_input(Buffer);
       
-      
     } else {
-      printf("4\n");
-      printf("%s\n", User_Input);
       strcpy(Buffer, User_Input);
       Arguments = parse_input(User_Input);
-      printf("%s\n", Arguments[0]);
-      printf("%s\n", Buffer);
     }
 
     char *Command = Arguments[0];
+
+    if (strcmp(Command, "exit") == 0) {
+      Should_Run = 0;
+      continue;
+
+    }
+      
+    else if (strcmp(Command, "cd") == 0) {
+      char *path = Arguments[1];
+
+      if (strcmp(path, "~") == 0) {
+        path = getenv("home");
+      }
+
+      if (path == NULL) {
+        fprintf(stderr, "cd: HOME not set\n");
+    } else if (chdir(path) != 0) {
+        perror("cd failed");
+    }
+      continue;
+
+    }
+
+    else if (strcmp(Command, "pwd") == 0) {
+      printf("%s\n", getcwd(Directort_Path, 100));
+      continue;
+
+    }
+
+    else if (strcmp(Command, "help") == 0) {
+      printf("available commands and usage information\n");
+      
+      printf("exit: Terminate the shell\n");
+      printf("cd <directory>: Change working directory\n");
+      printf("pwd: Print working directory\n");
+      printf("ls: \n");
+      printf("echo: \n");
+
+      continue;
+    }
 
     pid_t pid = fork();
 
@@ -101,36 +131,7 @@ int main() {
 
     } else if (pid == 0) {
 
-      if (strcmp(Command, "exit") == 0) {
-        *Shared_Memory = 0;
-        Should_Run = *Shared_Memory;
-
-      }
-      
-      else if (strcmp(Command, "cd") == 0) {
-
-        if (chdir(Arguments[1]) != 0) {
-          perror("cd failed");
-        }
-
-      }
-
-      else if (strcmp(Command, "pwd") == 0) {
-        printf("%s\n", getcwd(Directort_Path, 100));
-
-      }
-
-      else if (strcmp(Command, "help") == 0) {
-        printf("available commands and usage information\n");
-        
-        printf("exit: Terminate the shell\n");
-        printf("cd <directory>: Change working directory\n");
-        printf("pwd: Print working directory\n");
-        printf("ls: \n");
-        printf("echo: \n");
-      }
-
-      else if (strcmp(Command, "sudoku_validator") == 0) {
+      if (strcmp(Command, "sudoku_validator") == 0) {
         pthread_t threads[11];
         int thread_indexes[11];
         int return_code;
@@ -155,16 +156,21 @@ int main() {
           
           
         }
+
+        exit(0);
         
       }
-
-      else {
+      
+      else if (execvp(Command, Arguments) == -1) {
         printf("Command not found: %s\n", Command);
-      }
+        exit(1);
+
+        } else {
+          execvp(Command, Arguments);
+        }
 
     } else {
       wait(NULL);
-      Should_Run = *Shared_Memory;
       
     }
 
