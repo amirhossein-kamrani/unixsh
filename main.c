@@ -57,15 +57,40 @@ int main() {
   int Shmid = shmget((key_t) 1, 1024, 0666 | IPC_CREAT);
   int *Shared_Memory = shmat(Shmid, NULL, 0);
   char Directort_Path[100];
+  char Buffer[1024] = "";
+  char *User_Input;
+  char **Arguments;
 
   while (Should_Run)
   {
 
-    char *User_Input;
     User_Input = readline("unixsh> ");
     add_history(User_Input);
 
-    char **Arguments = parse_input(User_Input);
+    if (strcmp(User_Input, "!!") == 0) {
+      printf("1\n");
+      if (strlen(Buffer) == 0) {
+        printf("No commands in history\n");
+        free(User_Input);
+        continue;
+
+      }
+
+      printf("3\n");
+      printf("%s\n", User_Input);
+      printf("%s\n", Buffer);
+      Arguments = parse_input(Buffer);
+      
+      
+    } else {
+      printf("4\n");
+      printf("%s\n", User_Input);
+      strcpy(Buffer, User_Input);
+      Arguments = parse_input(User_Input);
+      printf("%s\n", Arguments[0]);
+      printf("%s\n", Buffer);
+    }
+
     char *Command = Arguments[0];
 
     pid_t pid = fork();
@@ -143,6 +168,7 @@ int main() {
       
     }
 
+    free(Arguments);
     free(User_Input);
     
   }
