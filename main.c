@@ -7,6 +7,7 @@
 #include <sys/shm.h>
 #include <readline/readline.h>
 #include <readline/history.h>
+#include <pthread.h>
 
 char **parse_input(char *input) {
   int Index = 1;
@@ -26,6 +27,29 @@ char **parse_input(char *input) {
   
   return Tokens;
 }
+
+struct subgrid {
+  int arr[9];
+  int index;
+};
+
+struct row_column {
+  int arr1[9];
+  int arr2[9];
+  int arr3[9];
+  int arr4[9];
+  int arr5[9];
+  int arr6[9];
+  int arr7[9];
+  int arr8[9];
+  int arr9[9];
+  int index;
+};
+
+int valid[11];
+
+void *validate_row_column(void *param);
+// void *validate_subgrid(void *param);
 
 int main() {
 
@@ -81,6 +105,34 @@ int main() {
         printf("echo: \n");
       }
 
+      else if (strcmp(Command, "sudoku_validator") == 0) {
+        pthread_t threads[11];
+        int thread_indexes[11];
+        int return_code;
+        struct row_column paramaters;
+
+        for (int i = 1; i <= 9; i++) {
+          printf("enter the 1st row: ");
+          paramaters.arr1;
+
+        }
+
+        for (int i = 0; i < 11; i++) {
+          thread_indexes[i] = i;
+
+          if (i < 2) {
+            return_code = pthread_create(&threads[i], NULL, validate_row_column, NULL);
+          }
+
+          else {
+            // return_code = pthread_create(&threads[i], NULL, validate_subgrid, NULL);
+          }
+          
+          
+        }
+        
+      }
+
       else {
         printf("Command not found: %s\n", Command);
       }
@@ -96,4 +148,53 @@ int main() {
   }
 
   return 0;
+}
+
+void *validate_row_column(void *param) {
+  struct row_column *paramaters = param;
+
+  for (int i = 0; i < 8; i++) {
+    for (int j = i + 1; j < 9; j++) {
+
+      if (paramaters->arr1[i] == paramaters->arr1[j]) {
+        valid[paramaters->index] = 0;
+      }
+
+      else if (paramaters->arr2[i] == paramaters->arr2[j]) {
+        valid[paramaters->index] = 0;
+      }
+
+      else if (paramaters->arr3[i] == paramaters->arr3[j]) {
+        valid[paramaters->index] = 0;
+      }
+
+      else if (paramaters->arr4[i] == paramaters->arr4[j]) {
+        valid[paramaters->index] = 0;
+      }
+
+      else if (paramaters->arr5[i] == paramaters->arr5[j]) {
+        valid[paramaters->index] = 0;
+      }
+
+      else if (paramaters->arr6[i] == paramaters->arr6[j]) {
+        valid[paramaters->index] = 0;
+      }
+
+      else if (paramaters->arr7[i] == paramaters->arr7[j]) {
+        valid[paramaters->index] = 0;
+      }
+
+      else if (paramaters->arr8[i] == paramaters->arr8[j]) {
+        valid[paramaters->index] = 0;
+      }
+
+      else if (paramaters->arr9[i] == paramaters->arr9[j]) {
+        valid[paramaters->index] = 0;
+      }
+
+    }
+  }
+
+  valid[paramaters->index] = 1;
+  
 }
